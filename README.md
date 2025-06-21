@@ -19,7 +19,7 @@ use ic_http_certification::{HttpRequest, HttpResponse};
 use ic_static_assets::include_assets;
 
 // This is the important line that embeds the frontend assets into the backend!
-include_assets!("$CARGO_MANIFEST_DIR/../../src/frontend/dist");
+include_assets!("$CARGO_MANIFEST_DIR/../frontend/dist");
 
 #[init]
 fn init() {
