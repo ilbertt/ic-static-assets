@@ -1,0 +1,23 @@
+[workspace]
+resolver = "2"
+members = [
+    "examples/basic/src/backend",
+    "packages/ic-static-assets",
+    "packages/ic-static-assets-macros",
+]
+default-members = ["packages/ic-static-assets"]
+
+[workspace.package]
+version = "0.0.1"
+edition = "2024"
+
+[workspace.dependencies]
+candid = "0.10"
+ic-cdk = "0.18"
+ic-asset-certification = "3.0"
+ic-http-certification = "3.0"
+
+include_dir = "0.7"
+
+ic-static-assets = { path = "packages/ic-static-assets" }
+ic-static-assets-macros = { path = "packages/ic-static-assets-macros" }

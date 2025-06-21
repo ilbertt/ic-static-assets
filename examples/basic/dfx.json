@@ -1,0 +1,18 @@
+{
+  "canisters": {
+    "backend": {
+      "type": "rust",
+      "gzip": true,
+      "package": "examples-basic-backend",
+      "candid": "src/backend/backend.did"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}

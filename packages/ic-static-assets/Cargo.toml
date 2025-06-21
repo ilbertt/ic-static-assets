@@ -1,0 +1,13 @@
+[package]
+name = "ic-static-assets"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+ic-static-assets-macros.workspace = true
+
+ic-cdk.workspace = true
+ic-asset-certification.workspace = true
+ic-http-certification.workspace = true
+
+include_dir.workspace = true
