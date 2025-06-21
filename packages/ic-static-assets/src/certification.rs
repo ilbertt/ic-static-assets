@@ -1,7 +1,9 @@
 use std::cell::RefCell;
 
-use ic_asset_certification::{Asset, AssetConfig, AssetEncoding, AssetFallbackConfig, AssetRouter};
-use ic_http_certification::{HeaderField, HttpRequest, HttpResponse, StatusCode};
+use ic_asset_certification::{
+    Asset, AssetCertificationError, AssetConfig, AssetEncoding, AssetFallbackConfig, AssetRouter,
+};
+use ic_http_certification::{Hash, HeaderField, HttpRequest, HttpResponse, StatusCode};
 use include_dir::Dir;
 
 const CACHE_CONTROL_HEADER_NAME: &str = "cache-control";
@@ -55,7 +57,19 @@ fn collect_assets<'content, 'path>(
     }
 }
 
-pub fn certify_all_assets(assets_dir: &'static Dir<'static>) {
+pub fn certify_all_assets_with_internal_router(assets_dir: &'static Dir<'static>) {
+    certify_all_assets(assets_dir, |assets, asset_configs| {
+        STATE.with_borrow_mut(|state| {
+            state.router.certify_assets(assets, asset_configs)?;
+            Ok(state.router.root_hash())
+        })
+    });
+}
+
+pub fn certify_all_assets<'path, F>(assets_dir: &'static Dir<'static>, certify_fn: F)
+where
+    F: Fn(Vec<Asset<'static, 'path>>, Vec<AssetConfig>) -> Result<Hash, AssetCertificationError>,
+{
     // 1. Define the asset certification configurations.
     let encodings = vec![
         AssetEncoding::Brotli.default_config(),
@@ -169,22 +183,14 @@ pub fn certify_all_assets(assets_dir: &'static Dir<'static>) {
     let mut assets = Vec::new();
     collect_assets(assets_dir, &mut assets);
 
-    STATE.with_borrow_mut(|state| {
-        if let Err(err) = state.router.certify_assets(assets, asset_configs) {
+    match certify_fn(assets, asset_configs) {
+        Ok(root_hash) => {
+            ic_cdk::api::certified_data_set(root_hash);
+        }
+        Err(err) => {
             ic_cdk::trap(format!("Failed to certify assets: {}", err));
         }
-        ic_cdk::api::certified_data_set(state.router.root_hash());
-    });
-}
-
-pub fn serve_assets(request: &HttpRequest<'static>) -> HttpResponse<'static> {
-    STATE.with_borrow(|s| {
-        let data_certificate =
-            ic_cdk::api::data_certificate().expect("Failed to get data certificate");
-        s.router
-            .serve_asset(&data_certificate, request)
-            .expect("Failed to serve asset")
-    })
+    }
 }
 
 fn well_known_asset_headers() -> Vec<HeaderField> {
@@ -198,4 +204,22 @@ fn well_known_asset_headers() -> Vec<HeaderField> {
             "*".to_string(),
         ),
     ])
+}
+
+pub fn serve_assets_with_internal_router(request: &HttpRequest<'static>) -> HttpResponse<'static> {
+    serve_assets(request, |root_hash, req| {
+        STATE.with_borrow(|s| {
+            s.router
+                .serve_asset(&root_hash, req)
+                .expect("Failed to serve asset")
+        })
+    })
+}
+
+pub fn serve_assets<F>(request: &HttpRequest<'static>, serve_fn: F) -> HttpResponse<'static>
+where
+    F: Fn(Vec<u8>, &HttpRequest<'static>) -> HttpResponse<'static>,
+{
+    let data_certificate = ic_cdk::api::data_certificate().expect("Failed to get data certificate");
+    serve_fn(data_certificate, request)
 }

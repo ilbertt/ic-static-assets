@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Particle Nexus - Interactive Experience</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div class="content">
+        <h1 class="title">Particle Nexus</h1>
+        <p class="subtitle">Interactive Particle System Experience</p>
+        
+        <div class="controls">
+            <button class="btn" onclick="addParticles(50)">Add Particles</button>
+            <button class="btn" onclick="clearParticles()">Clear All</button>
+            <button class="btn" onclick="toggleGravity()">Toggle Gravity</button>
+            <button class="btn" onclick="changeColorScheme()">Change Colors</button>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat">Particles: <span class="stat-value" id="particleCount">0</span></div>
+        <div class="stat">FPS: <span class="stat-value" id="fps">0</span></div>
+        <div class="stat">Gravity: <span class="stat-value" id="gravityStatus">On</span></div>
+    </div>
+
+    <div class="particle-count">
+        <span id="activeParticles">0</span> active particles
+    </div>
+
+    <div class="instructions">
+        <h3>Controls</h3>
+        <ul>
+            <li>Click to create particles</li>
+            <li>Drag to move particles</li>
+            <li>Mouse wheel to zoom</li>
+            <li>Space to pause/resume</li>
+        </ul>
+    </div>
+</body>
+</html>

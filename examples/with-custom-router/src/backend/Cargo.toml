@@ -1,0 +1,16 @@
+[package]
+name = "examples-with-custom-router-backend"
+version = "0.1.0"
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[dependencies]
+ic-static-assets.workspace = true
+
+candid.workspace = true
+ic-cdk.workspace = true
+ic-asset-certification.workspace = true
+ic-http-certification.workspace = true

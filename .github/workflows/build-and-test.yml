@@ -31,7 +31,7 @@ jobs:
         run: cargo doc --no-deps
 
       - name: Lint Rust
-        run: cargo clippy --all-targets --all-features
+        run: cargo clippy --all-targets --all-features --all -- -D warnings
 
       - name: Check Rust formatting
         run: cargo fmt --all -- --check
@@ -43,6 +43,7 @@ jobs:
       matrix:
         example:
           - basic
+          - with-custom-router
     steps:
       - name: Checkout
         uses: actions/checkout@v4

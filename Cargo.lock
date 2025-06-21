@@ -235,6 +235,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "examples-with-custom-router-backend"
+version = "0.1.0"
+dependencies = [
+ "candid",
+ "ic-asset-certification",
+ "ic-cdk",
+ "ic-http-certification",
+ "ic-static-assets",
+]
+
+[[package]]
 name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"

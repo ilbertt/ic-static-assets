@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
     "examples/basic/src/backend",
+    "examples/with-custom-router/src/backend",
     "packages/ic-static-assets",
     "packages/ic-static-assets-macros",
 ]
