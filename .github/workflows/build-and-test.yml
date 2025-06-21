@@ -1,0 +1,60 @@
+name: build_and_test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  SCCACHE_GHA_ENABLED: "true"
+  RUSTC_WRAPPER: "sccache"
+
+jobs:
+  build_and_test_rust:
+    name: build_and_test_rust:required
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.9
+
+      - name: Build Cargo crates
+        run: cargo build --release
+
+      - name: Test Cargo crates
+        run: cargo test --all-features
+
+      - name: Build Cargo docs
+        run: cargo doc --no-deps
+
+      - name: Lint Rust
+        run: cargo clippy --all-targets --all-features
+
+      - name: Check Rust formatting
+        run: cargo fmt --all -- --check
+
+  build_examples:
+    name: build_examples:required
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        example:
+          - basic
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup DFX
+        uses: dfinity/setup-dfx@main
+        with:
+          dfx-version: "auto"
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.9
+
+      - name: Build canisters
+        working-directory: examples/${{ matrix.example }}
+        run: dfx build --check
