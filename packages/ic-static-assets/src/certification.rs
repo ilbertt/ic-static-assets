@@ -12,16 +12,9 @@ const NO_CACHE_ASSET_CACHE_CONTROL: &str = "public, no-cache, no-store";
 const WELL_KNOWN_PATH: &str = "/.well-known";
 const II_ALTERNATIVE_ORIGINS_FILE_NAME: &str = "ii-alternative-origins";
 
+#[derive(Default)]
 struct HttpAssetState<'a> {
     router: AssetRouter<'a>,
-}
-
-impl Default for HttpAssetState<'_> {
-    fn default() -> Self {
-        Self {
-            router: AssetRouter::default(),
-        }
-    }
 }
 
 thread_local! {
@@ -178,9 +171,9 @@ pub fn certify_all_assets(assets_dir: &'static Dir<'static>) {
 
     STATE.with_borrow_mut(|state| {
         if let Err(err) = state.router.certify_assets(assets, asset_configs) {
-            ic_cdk::trap(&format!("Failed to certify assets: {}", err));
+            ic_cdk::trap(format!("Failed to certify assets: {}", err));
         }
-        ic_cdk::api::certified_data_set(&state.router.root_hash());
+        ic_cdk::api::certified_data_set(state.router.root_hash());
     });
 }
 
